@@ -33,6 +33,11 @@ AWSCloudGroup(cloud) {
             VPCNATGateway(az_1_nat_gateway, "NAT gateway", "") #Transparent
             EC2Instance(az_1_bastion, "Bastion", "EC2 Instance") #Transparent
         }
+        PrivateSubnetGroup(az_1_private_1, "Private subnet a1") {
+            EC2Instance(az_1_ec2_1, "Instance", "") #Transparent
+        }
+        az_1_ec2_1 ..> az_1_nat_gateway
+        az_1_ec2_1 <--> az_1_bastion
         az_1_bastion <-> internet_gateway : "Connection to Internet Gateway"
     }
 
@@ -41,6 +46,11 @@ AWSCloudGroup(cloud) {
             EC2Instance(az_2_bastion, "Bastion", "EC2 Instance") #Transparent
             VPCNATGateway(az_2_nat_gateway, "NAT gateway", "") #Transparent
         }
+        PrivateSubnetGroup(az_2_private_1, "Private subnet c1") {
+            EC2Instance(az_2_ec2_1, "Instance", "") #Transparent
+        }
+        az_2_ec2_1 ..> az_2_nat_gateway
+        az_2_ec2_1 <--> az_2_bastion
         az_2_bastion <-> internet_gateway : "Connection to Internet Gateway"
     }
 
