@@ -1,0 +1,39 @@
+@startuml
+title ELB Monitoring and Response Activity Diagram
+
+start
+
+:Monitor ELB metrics on the CloudWatch dashboard;
+
+partition CloudWatch {
+  :Check if Latency > 0.5 seconds;
+  :Check if HTTPCode_Backend_5XX or HTTPCode_ELB_5XX increases;
+  :Check if HealthyHostCount drops;
+}
+
+if (Any threshold exceeded?) then (yes)
+  :Trigger alarms and send notifications via SNS;
+
+  partition Automated Response {
+    :Trigger Lambda function;
+    :Scale up backend instances;
+    :Restart unhealthy instances;
+  }
+
+  :Analyze logs for error patterns;
+  :Check backend instance health manually;
+  :Investigate and resolve application errors;
+  :Optimize application performance;
+else (no)
+  :Continue monitoring ELB metrics;
+endif
+
+:Update Auto Scaling configuration;
+:Implement caching mechanisms;
+:Conduct load testing;
+
+:Adjust alarm thresholds;
+:Monitor additional metrics if necessary;
+
+stop
+@enduml

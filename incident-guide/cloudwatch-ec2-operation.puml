@@ -1,0 +1,32 @@
+@startuml
+title EC2 CPU Utilization Monitoring and Response Activity Diagram
+
+start
+
+:Monitor the CPUUtilization metric on the CloudWatch dashboard;
+
+partition CloudWatch {
+  :Check if CPUUtilization > 80%;
+}
+
+if (CPUUtilization > 80%) then (yes)
+  :Configure an alarm to notify via email or SMS;
+
+  :Receive notification;
+
+  :Configure an Auto Scaling group to add instances when CPU > 80% and remove instances when load decreases;
+
+  :Check if scaling resolves the issue;
+  if (Scaling resolves the issue?) then (yes)
+    :Continue monitoring CPUUtilization;
+  else (no)
+    :Upgrade instance from T2.micro to m5.large;
+
+    :Analyze and optimize application's CPU usage patterns;
+  endif
+else (no)
+  :Continue monitoring CPUUtilization;
+endif
+
+stop
+@enduml

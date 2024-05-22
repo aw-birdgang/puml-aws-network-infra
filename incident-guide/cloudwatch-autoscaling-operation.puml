@@ -1,0 +1,40 @@
+@startuml
+title Auto Scaling Monitoring and Response Activity Diagram
+
+start
+
+:Monitor Auto Scaling metrics on CloudWatch dashboard;
+
+partition CloudWatch {
+  :Check if CPUUtilization > 80%;
+  :Check NetworkIn/Out metrics;
+  :Check DiskReadOps/DiskWriteOps metrics;
+  :Check GroupInServiceInstances metric;
+}
+
+if (Thresholds exceeded?) then (yes)
+  :Trigger alarms and send notifications via SNS;
+
+  partition Automated Response {
+    :Trigger Auto Scaling policies;
+    :Scale out instances;
+    :Scale in instances;
+  }
+
+  :Analyze metrics;
+  :Manually check instance health;
+  :Analyze and optimize application CPU usage patterns;
+  :Upgrade instances if necessary;
+else (no)
+  :Continue monitoring Auto Scaling metrics;
+endif
+
+:Adjust Auto Scaling policies;
+:Enhance application monitoring;
+:Perform load testing;
+
+:Adjust alarm thresholds;
+:Monitor additional metrics if necessary;
+
+stop
+@enduml

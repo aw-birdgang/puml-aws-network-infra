@@ -1,0 +1,43 @@
+@startuml
+title RDS Performance Degradation Monitoring and Response Activity Diagram
+
+start
+
+:Users report slow performance;
+:Web application sends metrics to CloudWatch;
+
+partition CloudWatch {
+  :Monitor RDS metrics;
+  :Trigger alarms if thresholds exceeded;
+}
+
+if (CPU > 90% or FreeableMemory < 300MB or DiskQueueDepth > 15 or DatabaseConnections exceed threshold) then (yes)
+  :Send notification via SNS;
+
+  partition SNS {
+    :Notify Admin;
+  }
+
+  if (Automated Response Enabled?) then (yes)
+    partition Lambda {
+      :Trigger Lambda function;
+      :Create snapshot;
+      :Scale up instance;
+      :Add read replicas;
+    }
+  else (no)
+    :Admin analyzes query performance using Performance Insights;
+    :Admin optimizes slow queries;
+    :Admin adds indexes;
+    :Admin implements caching;
+  endif
+
+  :Admin adjusts alarm thresholds and sets up monitoring for additional metrics;
+else (no)
+  :Continue monitoring;
+endif
+
+:Continuous monitoring of RDS metrics;
+
+stop
+@enduml

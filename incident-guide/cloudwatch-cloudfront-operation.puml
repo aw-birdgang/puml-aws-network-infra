@@ -1,0 +1,39 @@
+@startuml
+title CloudFront Monitoring and Response Activity Diagram
+
+start
+
+:Monitor CloudFront metrics on CloudWatch dashboard;
+
+partition CloudWatch {
+  :Check 4xxErrorRate;
+  :Check 5xxErrorRate;
+  :Check OriginLatency;
+}
+
+if (Any threshold exceeded?) then (yes)
+  :Trigger alarms and send notifications via SNS;
+
+  partition Automated Response {
+    :Trigger AWS Lambda function;
+    :Generate user-friendly error pages;
+    :Check origin server status and restart if necessary;
+  }
+
+  :Analyze CloudFront logs;
+  :Manually check origin server status;
+  :Optimize CloudFront configuration;
+  :Optimize origin server performance;
+else (no)
+  :Continue monitoring CloudFront metrics;
+endif
+
+:Adjust CloudFront cache policies;
+:Enhance origin server monitoring;
+:Collect user feedback;
+
+:Adjust alarm thresholds;
+:Monitor additional metrics if necessary;
+
+stop
+@enduml

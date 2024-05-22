@@ -1,0 +1,40 @@
+@startuml
+title ECS Monitoring and Response Activity Diagram
+
+start
+
+:Monitor ECS metrics on CloudWatch dashboard;
+
+partition CloudWatch {
+  :Check MemoryUtilization;
+  :Check CPUUtilization;
+  :Check RunningTaskCount;
+}
+
+if (Any threshold exceeded?) then (yes)
+  :Trigger alarms and send notifications via SNS;
+
+  partition Automated Response {
+    :Trigger Auto Scaling policies;
+    :Scale out tasks;
+    :Scale in tasks;
+  }
+
+  :Analyze ECS metrics;
+  :Manually check task status;
+  :Analyze and optimize application memory usage patterns;
+  :Adjust task definition resource allocations;
+  :Analyze container logs;
+else (no)
+  :Continue monitoring ECS metrics;
+endif
+
+:Adjust Auto Scaling policies;
+:Enhance application monitoring;
+:Perform load testing;
+
+:Adjust alarm thresholds;
+:Monitor additional metrics if necessary;
+
+stop
+@enduml
