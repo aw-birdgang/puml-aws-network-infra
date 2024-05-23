@@ -1,0 +1,27 @@
+@startuml
+
+
+'
+node "PAYMENT" {
+    [API] as P_Api
+
+    [BackOffice] as g_back_office
+    [Scheduler] as P_Scheduler
+
+    database "payment_db" {
+    }
+
+    cloud {
+      [Ether Chain] as Ether_Chain
+    }
+
+    P_Api <-> payment_db : read/write
+    P_Scheduler <-> payment_db : read/write
+    Ether_Chain ..> P_Scheduler : loop check transaction
+}
+'
+
+P_Api <--> g_player : deposit, withdrawal
+
+
+@enduml
