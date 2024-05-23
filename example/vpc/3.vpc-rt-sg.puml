@@ -1,0 +1,109 @@
+@startuml VPC
+' Amazon.com, Inc. or its affiliates. All Rights Reserved.
+' SPDX-License-Identifier: MIT (For details, see https://github.com/awslabs/aws-icons-for-plantuml/blob/master/LICENSE)
+
+' Uncomment the line below for "dark mode" styling
+' !$AWS_DARK = true
+
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v18.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/AWSSimplified.puml
+!include AWSPuml/Compute/EC2.puml
+!include AWSPuml/Compute/EC2Instance.puml
+!include AWSPuml/Database/RDS.puml
+!include AWSPuml/NetworkingContentDelivery/ElasticLoadBalancingApplicationLoadBalancer.puml
+!include AWSPuml/NetworkingContentDelivery/CloudWANTransitGatewayRouteTableAttachmentParticipant.puml
+'!include AWSPuml/SecurityIdentityCompliance/SecurityGroup.puml
+
+!include AWSPuml/Groups/AWSCloud.puml
+!include AWSPuml/Groups/VPC.puml
+!include AWSPuml/Groups/AvailabilityZone.puml
+!include AWSPuml/Groups/PublicSubnet.puml
+!include AWSPuml/Groups/PrivateSubnet.puml
+!include AWSPuml/NetworkingContentDelivery/VPCNATGateway.puml
+!include AWSPuml/NetworkingContentDelivery/VPCInternetGateway.puml
+
+' Hide stereotypes in the diagram
+hide stereotype
+
+' Set line type to orthogonal
+skinparam linetype ortho
+
+' Define AWS Cloud Group
+AWSCloudGroup(cloud) {
+  ' Define VPC Group
+  VPCGroup(vpc) {
+    ' Define Internet Gateway
+    VPCInternetGateway(internet_gateway, "Internet gateway", "")
+
+    ' Define Route Tables
+    CloudWANTransitGatewayRouteTableAttachmentParticipant(route_table_public, "Public Route Table")
+    CloudWANTransitGatewayRouteTableAttachmentParticipant(route_table_private, "Private Route Table")
+
+    ' Define Security Groups
+'    SecurityGroup(sg_public, "Public Security Group")
+'    SecurityGroup(sg_private, "Private Security Group")
+
+    ' Define Application Load Balancer
+    ElasticLoadBalancingApplicationLoadBalancer(alb, "Application Load Balancer", "") #Transparent
+
+    ' Define the first Availability Zone group (AZ 1)
+    AvailabilityZoneGroup(az_1, "\tAvailability Zone 1\t") {
+      ' Define the public subnet group (AZ 1 Public Subnet)
+      PublicSubnetGroup(az_1_public, "Public subnet a1") {
+        ' Define NAT Gateway in the public subnet
+        VPCNATGateway(az_1_nat_gateway, "NAT gateway", "") #Transparent
+        ' Define Bastion EC2 instance in the public subnet
+        EC2Instance(az_1_bastion, "Bastion", "EC2 Instance") #Transparent
+      }
+      ' Define the private subnet group (AZ 1 Private Subnet)
+      PrivateSubnetGroup(az_1_private_1, "Private subnet a1") {
+        ' Define EC2 instance in the private subnet
+        EC2Instance(az_1_ec2_1, "Instance", "") #Transparent
+      }
+      ' Connect EC2 instance in the private subnet to the NAT Gateway
+      az_1_ec2_1 ..> az_1_nat_gateway
+      ' Connect EC2 instance in the private subnet to the Bastion instance
+      az_1_ec2_1 <--> az_1_bastion
+    }
+
+    ' Define the second Availability Zone group (AZ 2)
+    AvailabilityZoneGroup(az_2, "\tAvailability Zone 2\t") {
+      ' Define the public subnet group (AZ 2 Public Subnet)
+      PublicSubnetGroup(az_2_public, "Public subnet c1") {
+        ' Define Bastion EC2 instance in the public subnet
+        EC2Instance(az_2_bastion, "Bastion", "EC2 Instance") #Transparent
+        ' Define NAT Gateway in the public subnet
+        VPCNATGateway(az_2_nat_gateway, "NAT gateway", "") #Transparent
+      }
+      ' Define the private subnet group (AZ 2 Private Subnet)
+      PrivateSubnetGroup(az_2_private_1, "Private subnet c1") {
+        ' Define EC2 instance in the private subnet
+        EC2Instance(az_2_ec2_1, "Instance", "") #Transparent
+      }
+      ' Connect EC2 instance in the private subnet to the NAT Gateway
+      az_2_ec2_1 ..> az_2_nat_gateway
+      ' Connect EC2 instance in the private subnet to the Bastion instance
+      az_2_ec2_1 <--> az_2_bastion
+    }
+
+    ' Connect EC2 instances in both private subnets to the Application Load Balancer for load balanced traffic
+    az_1_ec2_1 <--> alb : "Load Balanced Traffic"
+    az_2_ec2_1 <--> alb : "Load Balanced Traffic"
+    ' Connect the Application Load Balancer to the Internet Gateway for outgoing traffic
+    alb <--> internet_gateway : "Outgoing Traffic"
+
+    ' Route Table Associations
+    route_table_public -[hidden]d- az_1_public
+    route_table_public -[hidden]d- az_2_public
+    route_table_private -[hidden]d- az_1_private_1
+    route_table_private -[hidden]d- az_2_private_1
+
+    ' Security Group Associations
+    sg_public -[hidden]d- az_1_bastion
+    sg_public -[hidden]d- az_2_bastion
+    sg_private -[hidden]d- az_1_ec2_1
+    sg_private -[hidden]d- az_2_ec2_1
+  }
+}
+@enduml
