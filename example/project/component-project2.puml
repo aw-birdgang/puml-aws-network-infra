@@ -1,0 +1,50 @@
+@startuml
+package "WEMIX" {
+  [Wemix Chain] as WemixChain
+  [Smart Contract] as SmartContract
+  [Scheduler] as WemixScheduler
+  [mirror_db] as MirrorDB
+
+  WemixChain --> SmartContract
+  WemixScheduler --> WemixChain : api
+  WemixScheduler --> MirrorDB : read
+  MirrorDB --> WemixChain : read
+}
+
+package "LOTTO" {
+  package "GLOBAL_LOTTO" {
+    [BackOffice] as BackOffice
+    [Player] as GlobalPlayer
+    [Api] as GlobalApi
+    [global_db] as GlobalDB
+
+    BackOffice --> GlobalPlayer
+    GlobalPlayer --> GlobalApi
+    GlobalPlayer --> GlobalDB : read/write
+    GlobalApi --> GlobalDB : read/write
+  }
+
+  package "LOCAL_LOTTO" {
+    [Api] as LocalApi
+    [local_db] as LocalDB
+
+    LocalApi --> LocalDB : read/write
+  }
+
+  GlobalApi --> LocalApi
+}
+
+package "PAYMENT" {
+  [Ether Chain] as EtherChain
+  [Scheduler] as PaymentScheduler
+  [API] as PaymentAPI
+  [payment_db] as PaymentDB
+
+  EtherChain --> PaymentScheduler : loop check transaction
+  PaymentScheduler --> PaymentDB
+  PaymentAPI --> PaymentDB
+}
+
+GlobalPlayer --> PaymentAPI : deposit, withdrawal
+WemixScheduler --> GlobalDB : extract & transform
+@enduml

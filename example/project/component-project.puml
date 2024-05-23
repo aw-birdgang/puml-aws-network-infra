@@ -1,0 +1,70 @@
+@startuml
+
+'
+node "LOTTO" {
+    node "LOCAL_LOTTO" {
+        [Api] as l_api
+    }
+    node "GLOBAL_LOTTO" {
+        [Api] as g_api
+        [Player] as g_player
+        [BackOffice] as g_back_office
+
+        g_api <-> g_player
+        g_back_office <-> g_api
+    }
+
+    database "global_db" {
+    }
+    database "local_db" {
+    }
+
+    GLOBAL_LOTTO <--> global_db : read/write
+    GLOBAL_LOTTO <--> l_api
+    LOCAL_LOTTO <--> local_db : read/write
+}
+'
+
+
+'
+node "PAYMENT" {
+    [API] as P_Api
+
+    [BackOffice] as g_back_office
+    [Scheduler] as P_Scheduler
+
+    database "payment_db" {
+    }
+
+    cloud {
+      [Ether Chain] as Ether_Chain
+    }
+
+    P_Api <-> payment_db : read/write
+    P_Scheduler <-> payment_db : read/write
+    Ether_Chain ..> P_Scheduler : loop check transaction
+}
+'
+
+
+'
+node "WEMIX" {
+    [Scheduler] as Wemix_Mirror_Scheduler
+    database "mirror_db" {
+    }
+    cloud {
+      [Wemix Chain] as Wemix_Chain
+      [Smart Contract] as Smart_Contract
+      Wemix_Chain <--> Smart_Contract
+    }
+    Wemix_Mirror_Scheduler <--> mirror_db : read/write
+    Wemix_Mirror_Scheduler <--> Smart_Contract : abi
+}
+
+
+P_Api <--> g_player : deposit, withdrawal
+
+Wemix_Mirror_Scheduler <. local_db : extract & transform
+Wemix_Mirror_Scheduler <.. global_db
+
+@enduml

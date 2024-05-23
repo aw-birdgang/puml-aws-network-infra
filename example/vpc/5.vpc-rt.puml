@@ -1,0 +1,109 @@
+@startuml VPC
+' Amazon.com, Inc. or its affiliates. All Rights Reserved.
+' SPDX-License-Identifier: MIT (For details, see https://github.com/awslabs/aws-icons-for-plantuml/blob/master/LICENSE)
+
+' Uncomment the line below for "dark mode" styling
+' !$AWS_DARK = true
+
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v18.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/AWSSimplified.puml
+!include AWSPuml/Compute/EC2.puml
+!include AWSPuml/Compute/EC2Instance.puml
+!include AWSPuml/Database/RDS.puml
+!include AWSPuml/NetworkingContentDelivery/ElasticLoadBalancingApplicationLoadBalancer.puml
+
+!include AWSPuml/Groups/AWSCloud.puml
+!include AWSPuml/Groups/VPC.puml
+!include AWSPuml/Groups/AvailabilityZone.puml
+!include AWSPuml/Groups/PublicSubnet.puml
+!include AWSPuml/Groups/PrivateSubnet.puml
+!include AWSPuml/NetworkingContentDelivery/VPCNATGateway.puml
+!include AWSPuml/NetworkingContentDelivery/VPCInternetGateway.puml
+!include AWSPuml/NetworkingContentDelivery/Route53RouteTable.puml
+
+' Define Route53RouteTable entity
+!define Route53RouteTable(e_alias, e_label, e_techn) AWSEntity(e_alias, e_label, e_techn, #8C4FFF, Route53RouteTable, Route53RouteTable)
+
+' Hide stereotypes in the diagram
+hide stereotype
+
+' Set line type to orthogonal
+skinparam linetype ortho
+
+' Define AWS Cloud Group
+AWSCloudGroup(cloud) {
+  ' Define VPC Group
+  VPCGroup(vpc) {
+    ' Define Internet Gateway
+    VPCInternetGateway(internet_gateway, "Internet gateway", "")
+
+    ' Define Route Table for public subnet
+    Route53RouteTable(public_route_table, "Public Route Table", "") #Transparent
+    ' Define Route Table for private subnet a1
+    Route53RouteTable(az_1_private_route_table_1, "Private Route Table a1", "") #Transparent
+    ' Define Route Table for private subnet a2
+    Route53RouteTable(az_1_private_route_table_2, "Private Route Table a2", "") #Transparent
+    ' Define Route Table for private subnet c1
+    Route53RouteTable(az_2_private_route_table_1, "Private Route Table c1", "") #Transparent
+    ' Define Route Table for private subnet c2
+    Route53RouteTable(az_2_private_route_table_2, "Private Route Table c2", "") #Transparent
+
+
+    ' Define the first Availability Zone group (AZ 1)
+    AvailabilityZoneGroup(az_1, "\tAvailability Zone 1\t") {
+      ' Define the public subnet group (AZ 1 Public Subnet)
+      PublicSubnetGroup(az_1_public, "Public subnet a1") {
+        ' Define NAT Gateway in the public subnet
+        VPCNATGateway(az_1_nat_gateway, "NAT gateway", "") #Transparent
+        ' Define Bastion EC2 instance in the public subnet
+        EC2Instance(az_1_bastion, "Bastion", "EC2 Instance") #Transparent
+      }
+      ' Define the private subnet group (AZ 1 Private Subnet)
+      PrivateSubnetGroup(az_1_private_1, "Private subnet a1") {
+        ' Define EC2 instance in the private subnet
+        EC2Instance(az_1_ec2_1, "Instance", "") #Transparent
+      }
+      PrivateSubnetGroup(az_1_private_2, "Private subnet a2") {
+        ' Define EC2 instance in the private subnet
+        EC2Instance(az_1_ec2_2, "Instance", "") #Transparent
+      }
+    }
+
+    ' Define the second Availability Zone group (AZ 2)
+    AvailabilityZoneGroup(az_2, "\tAvailability Zone 2\t") {
+      ' Define the public subnet group (AZ 2 Public Subnet)
+      PublicSubnetGroup(az_2_public, "Public subnet c1") {
+        ' Define NAT Gateway in the public subnet
+        VPCNATGateway(az_2_nat_gateway, "NAT gateway", "") #Transparent
+        ' Define Bastion EC2 instance in the public subnet
+        EC2Instance(az_2_bastion, "Bastion", "EC2 Instance") #Transparent
+      }
+      ' Define the private subnet group (AZ 2 Private Subnet)
+      PrivateSubnetGroup(az_2_private_1, "Private subnet c1") {
+        ' Define EC2 instance in the private subnet
+        EC2Instance(az_2_ec2_1, "Instance", "") #Transparent
+      }
+      PrivateSubnetGroup(az_2_private_2, "Private subnet c2") {
+        ' Define EC2 instance in the private subnet
+        EC2Instance(az_2_ec2_2, "Instance", "") #Transparent
+      }
+    }
+
+    ' Connect Route Tables to corresponding subnets and gateways
+    public_route_table --> az_1_public
+    public_route_table --> az_2_public
+    public_route_table --> internet_gateway
+
+    az_1_private_route_table_1 --> az_1_private_1
+    az_1_private_route_table_1 --> az_1_nat_gateway
+    az_1_private_route_table_2 --> az_1_private_2
+    az_1_private_route_table_2 --> az_1_nat_gateway
+
+    az_2_private_route_table_1 --> az_2_private_1
+    az_2_private_route_table_1 --> az_2_nat_gateway
+    az_2_private_route_table_2 --> az_2_private_2
+    az_2_private_route_table_2 --> az_2_nat_gateway
+  }
+}
+@enduml
