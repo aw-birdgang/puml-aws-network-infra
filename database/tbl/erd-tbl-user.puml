@@ -1,0 +1,66 @@
+@startuml
+!define primary_key(x) <b><color:red><&key> x</color></b>
+!define foreign_key(x) <color:blue><&key> x</color>
+!define column(x) <color:#efefef><&media-record></color> x
+!define table(x) entity x << (T, white) >>
+
+left to right direction
+skinparam roundcorner 5
+skinparam shadowing false
+skinparam handwritten false
+skinparam class {
+    BackgroundColor white
+    ArrowColor #2688d4
+    BorderColor #2688d4
+}
+
+title 'tblUser
+
+table( tblUser ) {
+    primary_key( id ) : int
+    column( userUnderId ): int
+    column( userName ): varchar(20)
+    column( userPassword ): varchar(250)
+    column( FirstName ): varchar(50)
+    column( LastName ): varchar(50)
+
+
+    column( personalId ): varchar(20)
+    column( userFullName ): varchar(20)
+    column( userDescription ): varchar(20)
+    column( roleId ): varchar(20)
+    column( userEmail ): varchar(20)
+    column( userGender ): varchar(20)
+    column( userPhone ): varchar(20)
+    column( userAddress ): varchar(20)
+    column( userDOB ): varchar(20)
+    column( userCardNo ): varchar(20)
+    column( photoPath ): varchar(20)
+    column( userOTP ): varchar(20)
+    column( machineId ): varchar(20)
+    column( machineEntry ): varchar(20)
+    column( languageId ): varchar(20)
+    column( creditAmount ): varchar(20)
+    column( commission ): varchar(20)
+    column( userTypeId ): varchar(20)
+    column( companyId ): varchar(20)
+    column( currencyId ): varchar(20)
+    column( lat ): varchar(20)
+    column( lng ): varchar(20)
+    column( userUrl ): varchar(20)
+    column( appInfo ): varchar(20)
+    column( userStatus ): varchar(20)
+    column( createdById ): varchar(20)
+    column( createdDateTime ): varchar(20)
+    column( updatedById ): varchar(20)
+    column( updatedDateTime ): varchar(20)
+    column( districtId ): varchar(20)
+    column( villageId ): varchar(20)
+    column( SignalRConnectionId ): varchar(20)
+    column( Referral ): varchar(20)
+    column( HouseNo ): varchar(20)
+    column( marketId ): varchar(20)
+}
+
+
+@enduml

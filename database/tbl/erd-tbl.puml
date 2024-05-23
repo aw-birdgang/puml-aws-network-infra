@@ -1,0 +1,153 @@
+@startuml
+!define primary_key(x) <b><color:red><&key> x</color></b>
+!define foreign_key(x) <color:blue><&key> x</color>
+!define column(x) <color:#efefef><&media-record></color> x
+!define table(x) entity x << (T, white) >>
+
+left to right direction
+skinparam roundcorner 5
+skinparam shadowing false
+skinparam handwritten false
+skinparam class {
+    BackgroundColor white
+    ArrowColor #2688d4
+    BorderColor #2688d4
+}
+
+title 'tblSale
+
+table( tblSale ) {
+    primary_key( saleId ) : int
+    column( billNumber ): varchar(20)
+    column( barcode ): varchar(20)
+    column( companyId ): int
+    column( companyQ ): int
+    column( marketId ): int
+    column( roundId ): int
+    column( userId ): int
+    column( saleSeries ): varchar(15)
+    column( saleMode ) : int
+    column( itemId ) : int
+    column( saleDigit ) : varchar(20)
+    column( saleAmount ) : int
+    column( saleRequest ) : int
+    column( saleMachine ) : varchar(200)
+    column( saleLocation ) : varchar(200)
+    column( saleRemark ) : varchar(250)
+    column( lat ) : decimal(10,7)
+    column( lng ) : decimal(10,7)
+    column( mobileNo ) : varchar(20)
+    column( referenceNo ) : varchar(35)
+    column( reasonId ) : int
+    column( saleStatus ) : int
+    column( createdById ) : int
+    column( createdDateTime ) : datetime
+    column( updatedById ) : int
+    column( updatedDateTime ) : datetime
+    column( DigitSeq ) : int
+}
+
+
+
+table( tblRound ) {
+    primary_key( id ) : int
+    column( roundDate ) : datetime
+    column( roundDescription ) : varchar(50)
+    column( roundStartTime ) : datetime
+    column( roundEndTime ) : datetime
+    column( roundNumber ) : varchar(10)
+    column( lotNumber ) : int
+    column( yearId ) : int
+    column( isCloseSale ) : bit
+    column( roundStatus ) : int
+    column( before_accumulate ) : money
+    column( current_accumulate ) : money
+    column( isjackpot ) : bit
+}
+
+
+
+table( tblRoundInvoice ) {
+    primary_key( id ) : int
+    column( roundId ) : int
+    column( companyId ) : int
+    column( invoiceNo ) : varchar(25)
+    column( TotalQuota ) : money
+    column( invoiceAmount ) : money
+    column( invoiceDate ) : datetime
+    column( TaxInvoiceNo ) : varchar(30)
+    column( TaxAmount ) : money
+    column( NetAmount ) : money
+    column( dueDate ) : datetime
+    column( status ) : int
+    column( userid ) : int
+    column( remark ) : varchar(150)
+    column( PrintCount ) : int
+    column( invoicetype ) : int
+    column( description ) : varchar(250)
+    column( postTaxris ) : bit
+}
+
+
+
+
+table( tblRoundCompany ) {
+    primary_key( id ) : int
+    column( roundId ) : int
+    column( companyId ) : int
+    column( roundEndTime ) : int
+    column( roundStatus ) : int
+    column( recordType ) : int
+    column( Quota1T ) : int
+    column( Quota2T ) : int
+    column( Quota3T ) : int
+    column( Quota4T ) : int
+    column( Quota5T ) : int
+    column( Quota6T ) : int
+    column( Quota4404 ) : int
+    column( Quota121 ) : int
+    column( Quota122 ) : int
+    column( Quota123 ) : int
+    column( Quota124 ) : int
+    column( Quota125 ) : int
+    column( Quota126 ) : int
+    column( createdate ) : int
+    column( createby ) : int
+    column( updateby ) : int
+
+}
+
+
+
+
+table( tblRoundPayment ) {
+    primary_key( id ) : int
+    column( invoiceNo ) : varchar(25)
+    column( roundId ) : int
+    column( paidAmount ) : money
+    column( paidDate ) : datetime
+    column( paymentType ) : int
+    column( referenceNo ) : varchar(50)
+    column( TaxInvoiceNo ) : varchar(30)
+    column( TaxAmount ) : money
+    column( remark ) : varchar(150)
+    column( userid ) : int
+    column( approvedUserId ) : int
+    column( approvedDate ) : datetime
+    column( status ) : int
+    column( PrintCount ) : int
+    column( postTAXRIS ) : int
+    column( PostGL ) : varchar(20)
+}
+
+
+'
+tblRound::id --|| tblRoundInvoice::roundId
+tblRound::id --|| tblRoundCompany::roundId
+
+'
+tblRoundInvoice::roundId --|| tblRoundPayment::roundId
+
+
+
+@enduml
