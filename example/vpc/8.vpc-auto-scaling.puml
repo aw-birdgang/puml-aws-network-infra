@@ -1,0 +1,97 @@
+@startuml VPC
+
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v18.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/AWSSimplified.puml
+!include AWSPuml/Compute/EC2.puml
+!include AWSPuml/Compute/EC2Instance.puml
+!include AWSPuml/Compute/EC2AutoScaling.puml
+!include AWSPuml/Database/RDS.puml
+!include AWSPuml/NetworkingContentDelivery/ElasticLoadBalancingApplicationLoadBalancer.puml
+
+!include AWSPuml/Groups/AWSCloud.puml
+!include AWSPuml/Groups/VPC.puml
+!include AWSPuml/Groups/AvailabilityZone.puml
+!include AWSPuml/Groups/PublicSubnet.puml
+!include AWSPuml/Groups/PrivateSubnet.puml
+!include AWSPuml/Groups/AutoScalingGroup.puml
+!include AWSPuml/NetworkingContentDelivery/VPCNATGateway.puml
+!include AWSPuml/NetworkingContentDelivery/VPCInternetGateway.puml
+
+' Hide stereotypes in the diagram
+hide stereotype
+
+' Set line type to orthogonal
+skinparam linetype ortho
+
+
+skinparam rectangle<<hidden>> {
+  shadowing false
+  BackgroundColor transparent
+  BorderColor transparent
+}
+
+!unquoted procedure LayoutRectangle($p_alias)
+rectangle " " as $p_alias <<hidden>>
+!endprocedure
+
+
+' Define AWS Cloud Group
+AWSCloudGroup(cloud) {
+  ' Define VPC Group
+  VPCGroup(vpc) {
+
+    ' Define the first Availability Zone group (AZ 1)
+    AvailabilityZoneGroup(az_1, "\tAvailability Zone 1\t") {
+      ' Define the public subnet group (AZ 1 Public Subnet)
+      PublicSubnetGroup(az_1_public, "Public subnet a1") {
+        ' Define NAT Gateway in the public subnet
+        VPCNATGateway(az_1_nat_gateway, "NAT gateway", "") #Transparent
+        ' Define Bastion EC2 instance in the public subnet
+        EC2Instance(az_1_bastion, "Bastion", "EC2 Instance") #Transparent
+      }
+      ' Define the private subnet group (AZ 1 Private Subnet)
+      PrivateSubnetGroup(az_1_private_1, "Private subnet a1") {
+          ' Define EC2 instance in the private subnet
+        EC2Instance(az_1_ec2_1, "Instance", "") #Transparent
+      }
+      ' Connect EC2 instance in the private subnet to the NAT Gateway
+      az_1_ec2_1 ..> az_1_nat_gateway
+      ' Connect EC2 instance in the private subnet to the Bastion instance
+      az_1_ec2_1 <--> az_1_bastion
+    }
+
+    LayoutRectangle(layout_rectangle) {
+      EC2AutoScaling(ec2_auto_scaling, "Amazon EC2 Auto Scaling", "")
+      AutoScalingGroupGroup(asg_1)
+
+      ec2_auto_scaling -[hidden]d- asg_1
+    }
+
+    ' Define the second Availability Zone group (AZ 2)
+    AvailabilityZoneGroup(az_2, "\tAvailability Zone 2\t") {
+      ' Define the public subnet group (AZ 2 Public Subnet)
+      PublicSubnetGroup(az_2_public, "Public subnet c1") {
+        ' Define Bastion EC2 instance in the public subnet
+        EC2Instance(az_2_bastion, "Bastion", "EC2 Instance") #Transparent
+        ' Define NAT Gateway in the public subnet
+        VPCNATGateway(az_2_nat_gateway, "NAT gateway", "") #Transparent
+      }
+      ' Define the private subnet group (AZ 2 Private Subnet)
+      PrivateSubnetGroup(az_2_private_1, "Private subnet c1") {
+          ' Define EC2 instance in the private subnet
+          EC2Instance(az_2_ec2_1, "Instance", "") #Transparent
+      }
+      ' Connect EC2 instance in the private subnet to the NAT Gateway
+      az_2_ec2_1 ..> az_2_nat_gateway
+      ' Connect EC2 instance in the private subnet to the Bastion instance
+      az_2_ec2_1 <--> az_2_bastion
+
+    }
+
+    asg_1 -[dashed,$AWS_COLOR_SMILE]l- az_1_ec2_1
+    asg_1 -[dashed,$AWS_COLOR_SMILE]r- az_2_ec2_1
+
+  }
+}
+@enduml

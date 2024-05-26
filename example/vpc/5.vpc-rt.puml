@@ -91,19 +91,19 @@ AWSCloudGroup(cloud) {
     }
 
     ' Connect Route Tables to corresponding subnets and gateways
-    public_route_table --> az_1_public
-    public_route_table --> az_2_public
-    public_route_table --> internet_gateway
+    public_route_table -> az_1_public
+    public_route_table -> az_2_public
+    public_route_table ----> internet_gateway
 
-    az_1_private_route_table_1 --> az_1_private_1
-    az_1_private_route_table_1 --> az_1_nat_gateway
-    az_1_private_route_table_2 --> az_1_private_2
-    az_1_private_route_table_2 --> az_1_nat_gateway
+    az_1_private_route_table_1 ---> az_1_private_1
+    az_1_private_route_table_1 ---> az_1_nat_gateway
+    az_1_private_route_table_2 ---> az_1_private_2
+    az_1_private_route_table_2 ---> az_1_nat_gateway
 
-    az_2_private_route_table_1 --> az_2_private_1
-    az_2_private_route_table_1 --> az_2_nat_gateway
-    az_2_private_route_table_2 --> az_2_private_2
-    az_2_private_route_table_2 --> az_2_nat_gateway
+    az_2_private_route_table_1 ---> az_2_private_1
+    az_2_private_route_table_1 ---> az_2_nat_gateway
+    az_2_private_route_table_2 ---> az_2_private_2
+    az_2_private_route_table_2 ---> az_2_nat_gateway
   }
 }
 @enduml
