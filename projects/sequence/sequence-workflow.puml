@@ -1,0 +1,29 @@
+@startuml
+actor ProductPM as PPM
+actor DevPM as DPM
+actor Assignee as ASG
+actor DevOps as DVO
+actor CPO
+actor CTO
+
+PPM -> DPM: Create Issue
+DPM -> BACKLOG: Add to BACKLOG
+DPM -> ASG: Assign Issue
+BACKLOG -> TO_DO: Move to TO DO
+
+ASG -> TO_DO: Start Task
+TO_DO -> IN_PROGRESS: Move to IN PROGRESS
+
+ASG -> IN_PROGRESS: Complete Work
+IN_PROGRESS -> DONE: Move to DONE
+
+DPM -> DONE: Create Sub-tasks for staging
+DVO -> DONE: Deploy to Staging
+DONE -> IN_STAGING: Move to IN STAGING
+
+CPO -> IN_STAGING: Perform QA and Review
+IN_STAGING -> READY_FOR_RELEASE: Move to READY FOR RELEASE
+
+CTO -> READY_FOR_RELEASE: Final Approval
+READY_FOR_RELEASE -> RELEASE: Deploy to Production
+@enduml

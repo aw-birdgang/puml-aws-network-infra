@@ -1,0 +1,46 @@
+@startuml
+[*] --> Backlog
+
+state Backlog {
+    [*] --> Task1 : task 1
+    [*] --> Task2 : task 2
+    [*] --> Task3 : task 3
+}
+
+Backlog --> ToDo : select for development
+
+state "To Do (Selected for Development)" as ToDo {
+    [*] --> Task4 : task 4
+    [*] --> Task5 : task 5
+}
+
+ToDo --> InProgress : start working
+
+state "In Progress" as InProgress {
+    [*] --> Task6 : task 6
+    [*] --> Task7 : task 7
+}
+
+InProgress --> Done : complete work
+
+state "Done (Ready for Review)" as Done {
+    [*] --> Task8 : task 8
+    [*] --> Task9 : task 9
+}
+
+Done --> Staging : ready for QA
+
+state "In Staging (Ready for QA)" as Staging {
+    [*] --> Task10 : task 10
+    [*] --> Task11 : task 11
+}
+
+Staging --> Release : ready for release
+
+state "Ready for Release" as Release {
+    [*] --> Task12 : task 12
+    [*] --> Task13 : task 13
+}
+
+Release --> [*] : release
+@enduml

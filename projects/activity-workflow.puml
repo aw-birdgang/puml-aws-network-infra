@@ -1,0 +1,23 @@
+@startuml
+start
+:Create Issue;
+:Assign to BACKLOG;
+
+:Dev PM selects issue and assigns owner;
+:Move to TO DO;
+
+:Assignee starts task;
+:Move to IN PROGRESS;
+
+:Complete work;
+:Move to DONE;
+
+:Review and staging deployment;
+:Move to IN STAGING;
+
+:QA and final review;
+:Move to READY FOR RELEASE;
+
+:CTO final approval and release;
+end
+@enduml

@@ -1,0 +1,125 @@
+@startuml
+
+skinparam linetype ortho
+
+package "KANBAN Board" {
+
+  rectangle BACKLOG {
+    :Issue Owner;
+    - Product PM (백로그 이슈 생성)
+    - Dev PM (백로그 이슈 선정 및 할당)
+    :
+    :Issue Definition;
+    - 아직 개발 대상으로 선택되지 않은 백로그 이슈
+    :
+    :Issue Action;
+    - Dev PM이 개발할 백로그 이슈를 선정하고 담당자를 지정
+    - 필요한 경우 추가 작업/하위 작업 생성 및 담당자 설정
+    :
+    :Completion Trigger;
+    - 담당자가 지정되면 해당 이슈를 TO DO 칼럼으로 이동
+    :
+    :Optimizations;
+    - Automation: Transition from BACKLOG to TO DO upon assignment
+  }
+
+  rectangle "TO DO (SELECTED FOR DEVELOPMENT)" as TODO {
+    :Issue Owner;
+    - 이슈의 담당자
+    :
+    :Issue Definition;
+    - PM에 의해 개발이 결정된 백로그 이슈
+    :
+    :Issue Action;
+    - 이슈의 담당자가 작업 시작 시기를 결정
+    :
+    :Completion Trigger;
+    - 담당자가 작업을 시작하면, 이슈를 IN PROGRESS 칼럼으로 이동
+    :
+    :Optimizations;
+    - Start Criteria: Clearer guidelines for task start
+  }
+
+  rectangle "IN PROGRESS" as INPROGRESS {
+    :Issue Owner;
+    - 이슈의 담당자
+    :
+    :Issue Definition;
+    - 담당자가 현재 작업 중인 백로그 이슈
+    :
+    :Issue Action;
+    - 개발, 기획, 디자인, 연구, QA 등의 작업 수행
+    :
+    :Completion Trigger;
+    - 담당자가 작업을 완료하면, 이슈를 DONE 칼럼으로 이동
+    :
+    :Optimizations;
+    - Progress Tracking: Sub-stages or checklists for granular tracking
+  }
+
+  rectangle "DONE (READY FOR REVIEW)" as DONE {
+    :Issue Owner;
+    - Dev PM
+    - DevOps & Developers (스테이징 배포)
+    :
+    :Issue Definition;
+    - 스테이징 전 리뷰 및 승인이 필요한 완료된 이슈/작업
+    :
+    :Issue Action;
+    - Dev PM이 Sub-task를 생성하고 스테이징 배포 담당자 지정
+    - DevOps, Dev 담당자가 스테이징 배포
+    :
+    :Completion Trigger;
+    - 이슈가 리뷰되고 승인되며 QA를 위해 스테이징 서버에 배포된 경우, 이슈의 ASSIGNEE가 STAGING 칼럼으로 이동
+    :
+    :Optimizations;
+    - Review Process: Define timelines for reviews
+    - Add 'Review In Progress' sub-column
+  }
+
+  rectangle "IN STAGING (READY FOR QA)" as INSTAGING {
+    :Issue Owner;
+    - Product 팀 (QA)
+    - CPO (최종 리뷰)
+    :
+    :Issue Definition;
+    - QA 및 제품 리뷰 수행
+    :
+    :Issue Action;
+    - Product팀 QA, 테스트 및 리뷰
+    - CPO, 최종리뷰 및 승인
+    :
+    :Completion Trigger;
+    - CPO의 승인을 받으면 이슈를 출시 준비 완료 칼럼으로 이동. 변경이 필요한 경우, TO DO 칼럼으로 이슈를 되돌리고, 업데이트된 Zeplin 링크를 포함하여 팀원 지정/태그
+    :
+    :Optimizations;
+    - Regression Testing: Explicit actions for regression testing
+    - Backtracking: Streamlined process for moving tasks back to TO DO
+  }
+
+  rectangle "READY FOR RELEASE" as READYFORRELEASE {
+    :Issue Owner;
+    - CTO
+    - Dev PM
+    :
+    :Issue Definition;
+    - 최종 리뷰가 필요하고 출시 준비가 완료된 백로그 이슈
+    :
+    :Issue Action;
+    - CTO가 출시 버전을 최종 승인
+    - Dev PM이 하위 작업을 생성하고 출시 버전을 배포할 담당자 지정
+    - DevOps, 개발자가 출시 버전 배포
+    :
+    :Completion Trigger;
+    - CTO가 출시 결정을 승인하면, Dev PM이 Jira에 RELEASE VERSION 생성하고 배포 담당자 지정. 변경이 필요한 경우, CTO가 TO DO 칼럼으로 이슈 되돌림
+  }
+
+  BACKLOG -down-> TODO : 담당자 지정
+  TODO -down-> INPROGRESS : 작업 시작
+  INPROGRESS -down-> DONE : 작업 완료
+  DONE -down-> INSTAGING : 리뷰 및 QA
+  INSTAGING -down-> READYFORRELEASE : 최종 승인
+
+}
+
+@enduml
