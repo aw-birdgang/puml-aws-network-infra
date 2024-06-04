@@ -1,0 +1,35 @@
+@startuml
+
+actor "Admin" as Admin
+
+node "AWS Cloud" {
+    node "AWS Control Tower" {
+        [Config Rules] as ConfigRules
+        [SNS Topic] as SNSTopic
+        [Lambda Function] as LambdaFunction
+    }
+
+    node "AWS Resources" {
+        [EC2 Instance] as EC2
+        [S3 Bucket] as S3
+    }
+}
+
+Admin -> ConfigRules : Define compliance rule
+
+ConfigRules --> EC2 : Monitor
+ConfigRules --> S3 : Monitor
+
+EC2 --> ConfigRules : Report
+S3 --> ConfigRules : Report
+
+ConfigRules --> SNSTopic : Notify
+
+SNSTopic --> LambdaFunction : Trigger Lambda
+
+LambdaFunction --> EC2 : Add missing tags
+LambdaFunction --> S3 : Add missing tags
+
+Admin --> ConfigRules : Monitor compliance status
+
+@enduml

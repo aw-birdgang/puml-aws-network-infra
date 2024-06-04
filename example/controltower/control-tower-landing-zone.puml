@@ -1,0 +1,47 @@
+@startuml
+
+actor "Admin" as Admin
+
+node "AWS Cloud" {
+    node "AWS Control Tower" {
+        [Organizations] as Org
+        [Account Factory] as AccountFactory
+        [Organizational Units (OUs)] as OUs
+        [Service Control Policies (SCP)] as SCP
+        [IAM Identity Center] as IdentityCenter
+        [Guardrails] as Guardrails
+        [AWS Config] as Config
+    }
+
+    node "AWS Accounts" {
+        [Dev Account] as Dev
+        [Test Account] as Test
+        [Prod Account] as Prod
+    }
+}
+
+Admin --> Org : Setup AWS Organizations
+Admin --> AccountFactory : Create accounts using Account Factory
+Admin --> OUs : Create OUs for Dev, Test, and Prod
+Admin --> SCP : Apply SCPs to OUs
+Admin --> IdentityCenter : Setup centralized user access
+Admin --> Guardrails : Configure preventive and detective Guardrails
+Admin --> Config : Setup AWS Config and Config Aggregator
+
+AccountFactory --> Dev : Provision Dev account
+AccountFactory --> Test : Provision Test account
+AccountFactory --> Prod : Provision Prod account
+
+IdentityCenter --> Dev : Centralized access management
+IdentityCenter --> Test : Centralized access management
+IdentityCenter --> Prod : Centralized access management
+
+Guardrails --> Dev : Enforce compliance
+Guardrails --> Test : Enforce compliance
+Guardrails --> Prod : Enforce compliance
+
+Config --> Dev : Monitor compliance
+Config --> Test : Monitor compliance
+Config --> Prod : Monitor compliance
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+actor Developer
+
+node GitHub {
+    folder "Repository" {
+        Developer --> [Branch] : Code Push
+    }
+    node "Webhook" {
+        [Branch] -> [AWSCodeStarSourceConnection] : Trigger event
+    }
+}
+
+node AWS {
+    node "CodeStarSourceConnection" {
+        [AWSCodeStarSourceConnection] -> [AWSCodePipeline] : Start pipeline
+    }
+    node "CodePipeline" {
+        [AWSCodePipeline] --> [AWSCodeBuild] : Build
+    }
+}
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+
+actor "Admin" as Admin
+
+node "AWS Control Tower" {
+    [Organizations] as Org
+    [Service Control Policies (SCP)] as SCP
+}
+
+node "Organizational Units (OUs)" {
+    [Production OU] as ProdOU
+}
+
+node "AWS Accounts" {
+    [Prod Account] as Prod
+}
+
+Admin -> Org : Setup AWS Organizations
+Admin -> ProdOU : Create Production OU
+Admin -> Prod : Assign Prod Account to Production OU
+Admin -> SCP : Create and apply SCP to Production OU
+
+SCP --> ProdOU : Apply SCP to limit EC2 terminate and S3 delete
+Prod --> SCP : Enforced policy on Prod Account
+
+@enduml

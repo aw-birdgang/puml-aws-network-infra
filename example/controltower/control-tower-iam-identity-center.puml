@@ -1,0 +1,18 @@
+@startuml
+
+node "AWS Control Tower" {
+    [IAM Identity Center] as IdentityCenter
+}
+
+node "Users and Groups" {
+    [Developers] as DevGroup
+    [Testers] as TestGroup
+    [Production] as ProdGroup
+}
+
+
+IdentityCenter --> DevGroup : Assign DeveloperAccess role
+IdentityCenter --> TestGroup : Assign TesterAccess role
+IdentityCenter --> ProdGroup : Assign ProductionAccess role
+
+@enduml
