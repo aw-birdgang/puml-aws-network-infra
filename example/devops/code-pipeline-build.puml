@@ -1,0 +1,13 @@
+@startuml
+package "AWS CodePipeline" {
+    [Source Stage] -> [Build Stage]
+    component "Build Stage" {
+        [AWS CodeBuild] -down-> [Build Environment]
+        [Build Environment] -down-> [buildspec.yml] : Execute
+        [Build Environment] --> [Compile Code] : Run
+        [Build Environment] --> [Run Tests] : Execute
+        [Build Environment] --> [Generate Artifacts] : Produce
+        [Build Environment] --> [S3] : Upload artifacts
+    }
+}
+@enduml
