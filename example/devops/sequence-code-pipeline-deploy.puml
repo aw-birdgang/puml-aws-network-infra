@@ -1,0 +1,19 @@
+@startuml
+title CI/CD with CodePipeline and AWS CodeDeploy
+
+actor Developer
+participant CodePipeline
+participant DevServer as "Dev"
+participant StagingServer as "Staging"
+
+CodePipeline -> DevServer : Deploy Artifacts using CodeDeploy
+DevServer -> DevServer : Deploy to Development Environment
+DevServer -> Developer : Notify Deployment Completion
+
+Developer -> DevServer : Test on Development Environment
+Developer -> CodePipeline : Approve Staging Deployment
+
+CodePipeline -> StagingServer : Deploy Artifacts using CodeDeploy
+StagingServer -> StagingServer : Deploy to Staging Environment
+
+@enduml
