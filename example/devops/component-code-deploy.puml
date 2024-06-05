@@ -1,0 +1,31 @@
+@startuml
+package "AWS ECS" {
+    [Cluster] --> [Service]
+    [Service] --> [Task]
+    [Task] --> [Task Definition]
+    [Task Definition] --> [Container]
+
+    [Cluster] --> [Container Instance]
+    [Container Instance] --> [Container]
+
+    [Load Balancer] - [Service] : Balances traffic
+'    [Auto Scaling Group] - [Service] : Scales tasks
+
+'    [User] -right-> [Cluster] : Manages
+'    [User] -right-> [Task Definition] : Defines
+}
+
+component Cluster {
+    [Service] -- [Task]
+}
+
+component Service {
+    [Task] -- [Task Definition]
+    [Task] -- [Container]
+}
+
+component Task {
+    [Container Instance] -- [Container]
+}
+
+@enduml

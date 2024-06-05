@@ -1,0 +1,40 @@
+@startuml
+actor Developer as Dev
+entity Repository as Repo
+entity GitRepository as Repo
+entity CodeStarSourceConnection as CSC
+entity Webhook as WH
+
+
+Dev -> Repo: Push Code
+Repo -> WH: Notify Webhook
+WH -> CodePipeline: Trigger CodePipeline
+
+CodePipeline -> CodePipeline: Start Pipeline
+
+group Source Stage
+    CodePipeline -> CSC: Get Source from Repository
+    CSC --> CodePipeline: Source Retrieved
+end
+
+group Build Stage
+    CodePipeline -> CodeBuild: Start Build
+    CodeBuild -> BuildContainer: Initialize Build Environment
+    BuildContainer --> CodeBuild: Environment Initialized
+    CodeBuild -> BuildContainer: Install Dependencies
+    BuildContainer --> CodeBuild: Dependencies Installed
+    CodeBuild -> BuildContainer: Run Tests
+    BuildContainer --> CodeBuild: Tests Passed
+    CodeBuild -> BuildContainer: Build Docker Image
+    BuildContainer --> CodeBuild: Docker Image Built
+    CodeBuild --> CodePipeline: Build Complete
+end
+
+group Post-Build Stage
+    CodePipeline -> CodeBuild: Start Post-Build Actions
+    CodeBuild -> ECR: Push Docker Image to ECR
+    ECR --> CodeBuild: Docker Image Pushed
+    CodeBuild --> CodePipeline: Post-Build Actions Complete
+end
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+title CI/CD with CodePipeline and Human Approval
+
+start
+
+:Run Tests on Staging;
+
+if (Tests Successful?) then (yes)
+  :Manual Approval;
+  :QA Engineer Reviews Test Results;
+
+  if (Approve for Production?) then (yes)
+    :Deploy to Production;
+    :Deployed to Production;
+    stop
+  else (no)
+    :Fix Issues;
+    :Deploy to Staging Again;
+    :Run Tests on Staging Again;
+    :QA Engineer Reviews Test Results Again;
+  endif
+
+else (no)
+  :Fix Issues;
+  :Deploy to Staging Again;
+  :Run Tests on Staging Again;
+  :QA Engineer Reviews Test Results Again;
+endif
+
+@enduml

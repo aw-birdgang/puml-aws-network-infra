@@ -1,0 +1,33 @@
+@startuml
+
+participant CodePipeline as CODE_PIPELINE
+participant CodeBuild as CODE_BUILD
+participant BuildContainer as BUILD_CONTAINER
+participant ECR as ECR
+participant S3 as S3
+
+
+group Build Stage
+    CODE_PIPELINE -> CODE_BUILD: Start Build
+    CODE_BUILD -> BUILD_CONTAINER: Initialize Build Environment
+    BUILD_CONTAINER --> CODE_BUILD: Environment Initialized
+    CODE_BUILD -> BUILD_CONTAINER: Install Dependencies
+    BUILD_CONTAINER --> CODE_BUILD: Dependencies Installed
+    CODE_BUILD -> BUILD_CONTAINER: Run Tests
+    BUILD_CONTAINER --> CODE_BUILD: Tests Passed
+    CODE_BUILD -> BUILD_CONTAINER: Build Docker Image
+    BUILD_CONTAINER --> CODE_BUILD: Docker Image Built
+    CODE_BUILD --> CODE_PIPELINE: Build Complete
+end
+
+group Post-Build Stage
+    CODE_PIPELINE -> CODE_BUILD: Start Post-Build Actions
+    CODE_BUILD -> ECR: Push Docker Image to ECR
+    ECR --> CODE_BUILD: Docker Image Pushed
+    CODE_BUILD -> S3: Upload Build Artifacts to S3
+    S3 --> CODE_BUILD: Artifacts Uploaded
+    CODE_BUILD --> CODE_PIPELINE: Post-Build Actions Complete
+end
+
+
+@enduml

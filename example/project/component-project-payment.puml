@@ -1,6 +1,5 @@
 @startuml
 
-
 '
 node "PAYMENT" {
     [API] as P_Api

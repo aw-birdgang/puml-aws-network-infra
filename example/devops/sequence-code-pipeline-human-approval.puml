@@ -1,0 +1,41 @@
+@startuml
+title CI/CD with CodePipeline and Human Approval
+
+actor Developer
+participant CodeRepository
+participant BuildServer
+participant StagingServer
+actor QATester as "QA Engineer"
+participant ProductionServer
+
+Developer -> CodeRepository : Commit Code
+CodeRepository -> BuildServer : Trigger Build
+BuildServer -> StagingServer : Deploy to Staging
+
+StagingServer -> StagingServer : Run Tests on Staging
+StagingServer -> QATester : Notify Test Completion
+
+alt Tests Successful
+    QATester -> QATester : Review Test Results
+    alt Approve for Production
+        QATester -> ProductionServer : Approve Deployment
+        ProductionServer -> ProductionServer : Deploy to Production
+        note right of ProductionServer : Deployed to Production
+    else
+        QATester -> Developer : Report Issues
+        Developer -> CodeRepository : Fix Issues and Commit
+        CodeRepository -> BuildServer : Trigger Build
+        BuildServer -> StagingServer : Deploy to Staging
+        StagingServer -> StagingServer : Run Tests on Staging
+        StagingServer -> QATester : Notify Test Completion
+    end
+else
+    StagingServer -> Developer : Report Issues
+    Developer -> CodeRepository : Fix Issues and Commit
+    CodeRepository -> BuildServer : Trigger Build
+    BuildServer -> StagingServer : Deploy to Staging
+    StagingServer -> StagingServer : Run Tests on Staging
+    StagingServer -> QATester : Notify Test Completion
+end
+
+@enduml

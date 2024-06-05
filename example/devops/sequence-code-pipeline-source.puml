@@ -1,0 +1,19 @@
+@startuml
+actor Developer as Dev
+entity GitRepository as Repo
+entity CodeStarSourceConnection as CSC
+entity Webhook as WH
+entity CodePipeline as CODE_PIPELINE
+
+Dev -> Repo: Push Code to prod Branch
+Repo -> WH: Notify Webhook
+WH -> CODE_PIPELINE: Trigger CodePipeline
+
+CODE_PIPELINE -> CODE_PIPELINE: Start Pipeline
+
+group Source Stage
+    CODE_PIPELINE -> CSC: Get Source from Repository
+    CSC --> CODE_PIPELINE: Source Retrieved
+end
+
+@enduml
